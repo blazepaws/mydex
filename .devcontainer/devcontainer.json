@@ -3,5 +3,5 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "rust",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "python3 -m venv .venv; source .venv/bin/activate; ls -la; python -m pip install -r requirements.txt"
+  "postCreateCommand": "python3 -m venv .venv; source .venv/bin/activate; "
 }
