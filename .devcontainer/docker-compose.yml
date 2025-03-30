@@ -1,0 +1,13 @@
+services:
+  rust:
+    # TODO: Build a common base image for dev and prod.
+    image: mcr.microsoft.com/devcontainers/rust
+    volumes:
+      - .:/workspace
+    command: sleep infinity
+
+  mysql:
+    image: mysql:9.2
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: Dex
