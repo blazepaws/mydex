@@ -1,0 +1,2 @@
+# Dependencies for our scripts
+mysql-connector-python==9.2.0

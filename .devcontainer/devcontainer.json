@@ -2,5 +2,6 @@
   "name": "Rust",
   "dockerComposeFile": "docker-compose.yml",
   "service": "rust",
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "pip3 install -r requirements.txt"
 }
