@@ -1,7 +1,6 @@
 services:
   rust:
-    # TODO: Build a common base image for dev and prod.
-    image: mcr.microsoft.com/devcontainers/rust
+    build: .
     volumes:
       - .:/workspace
     command: sleep infinity
