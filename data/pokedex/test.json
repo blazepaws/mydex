@@ -1,0 +1,282 @@
+{
+  "name": "Test Dex",
+  "description": "Debug Pokédex that should use all features",
+  "uses_pixelart_graphics": false,
+  "thumbnail": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png",
+  "entries": [
+    {
+      "id": 1,
+      "name": "Venusaur",
+      "gender": "male",
+      "shiny": true,
+      "gmax": true,
+      "technical": true,
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/3.png"
+    },
+    {
+      "id": 2,
+      "name": "Chandelure",
+      "gender": "female",
+      "shiny": false,
+      "gmax": true,
+      "technical": true,
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/609.png"
+    },
+    null,
+    null,
+    {
+      "id": 3,
+      "name": "Koraidon",
+      "gender": null,
+      "shiny": false,
+      "gmax": true,
+      "technical": false,
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1007.png"
+    },
+    {
+      "id": 4,
+      "name": "Lilligant",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/549.png"
+    },
+    {
+      "id": 587,
+      "name": "Karrablast",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/588.png"
+    },
+    {
+      "id": 588,
+      "name": "Escavalier",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/589.png"
+    },
+    {
+      "id": 589,
+      "name": "Foongus",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/590.png"
+    },
+    {
+      "id": 590,
+      "name": "Amoonguss",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/591.png"
+    },
+    {
+      "id": 591,
+      "name": "Frillish",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/592.png"
+    },
+    {
+      "id": 592,
+      "name": "Jellicent",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/593.png"
+    },
+    {
+      "id": 593,
+      "name": "Alomomola",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/594.png"
+    },
+    {
+      "id": 594,
+      "name": "Joltik",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/595.png"
+    },
+    {
+      "id": 595,
+      "name": "Galvantula",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/596.png"
+    },
+    {
+      "id": 596,
+      "name": "Ferroseed",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/597.png"
+    },
+    {
+      "id": 597,
+      "name": "Ferrothorn",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/598.png"
+    },
+    {
+      "id": 598,
+      "name": "Klink",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/599.png"
+    },
+    {
+      "id": 599,
+      "name": "Klang",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/600.png"
+    },
+    {
+      "id": 600,
+      "name": "Klinklang",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/601.png"
+    },
+    {
+      "id": 601,
+      "name": "Tynamo",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/602.png"
+    },
+    {
+      "id": 602,
+      "name": "Eelektrik",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/603.png"
+    },
+    {
+      "id": 603,
+      "name": "Eelektross",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/604.png"
+    },
+    {
+      "id": 604,
+      "name": "Elgyem",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/605.png"
+    },
+    {
+      "id": 605,
+      "name": "Beheeyem",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/606.png"
+    },
+    {
+      "id": 606,
+      "name": "Litwick",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/607.png"
+    },
+    {
+      "id": 607,
+      "name": "Lampent",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/608.png"
+    },
+    {
+      "id": 608,
+      "name": "Chandelure",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/609.png"
+    },
+    {
+      "id": 609,
+      "name": "Axew",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/610.png"
+    },
+    {
+      "id": 610,
+      "name": "Fraxure",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/611.png"
+    },
+    {
+      "id": 611,
+      "name": "Haxorus",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/612.png"
+    },
+    {
+      "id": 612,
+      "name": "Cubchoo",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/613.png"
+    },
+    {
+      "id": 613,
+      "name": "Beartic",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/614.png"
+    },
+    {
+      "id": 614,
+      "name": "Cryogonal",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/615.png"
+    },
+    {
+      "id": 615,
+      "name": "Shelmet",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/616.png"
+    },
+    {
+      "id": 616,
+      "name": "Accelgor",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/617.png"
+    },
+    {
+      "id": 617,
+      "name": "Stunfisk",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/618.png"
+    },
+    {
+      "id": 618,
+      "name": "Mienfoo",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/619.png"
+    },
+    {
+      "id": 619,
+      "name": "Mienshao",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/620.png"
+    },
+    {
+      "id": 620,
+      "name": "Druddigon",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/621.png"
+    },
+    {
+      "id": 621,
+      "name": "Golett",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/622.png"
+    },
+    {
+      "id": 622,
+      "name": "Golurk",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/623.png"
+    },
+    {
+      "id": 623,
+      "name": "Pawniard",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/624.png"
+    },
+    {
+      "id": 624,
+      "name": "Bisharp",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/625.png"
+    },
+    {
+      "id": 625,
+      "name": "Bouffalant",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/626.png"
+    },
+    {
+      "id": 1016,
+      "name": "Ogerpon",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1017.png"
+    },
+    {
+      "id": 1017,
+      "name": "Archaludon",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1018.png"
+    },
+    {
+      "id": 1018,
+      "name": "Hydrapple",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1019.png"
+    },
+    {
+      "id": 1019,
+      "name": "Gouging Fire",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1020.png"
+    },
+    {
+      "id": 1020,
+      "name": "Raging Bolt",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1021.png"
+    },
+    {
+      "id": 1021,
+      "name": "Iron Boulder",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1022.png"
+    },
+    {
+      "id": 1022,
+      "name": "Iron Crown",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1023.png"
+    },
+    {
+      "id": 1023,
+      "name": "Terapagos",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1024.png"
+    },
+    {
+      "id": 1024,
+      "name": "Pecharunt",
+      "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1025.png"
+    }
+  ]
+}

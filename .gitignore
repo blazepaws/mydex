@@ -1,3 +1,10 @@
 /target
 .env
 .idea/
+.sqlx/
+.venv/
+.cache/
+# Don't include automatically generated files
+public/images/*_thumbnail.avif
+public/images/*_spritesheet.avif
+data/compiles/
