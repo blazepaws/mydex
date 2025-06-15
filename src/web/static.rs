@@ -11,9 +11,9 @@ use crate::web::r#static::get::not_found;
 /// Builds a router for our statically served resources.
 /// This includes images, stylesheets, and precompiled HTML.
 pub fn router() -> Router {
-    let image_serve_dir = ServeDir::new("public/images/")
+    let image_serve_dir = ServeDir::new("web/images/")
         .not_found_service(service_fn(not_found));
-    let static_serve_dir = ServeDir::new("public/resources/")
+    let static_serve_dir = ServeDir::new("web/resources/")
         .not_found_service(service_fn(not_found));
     Router::new()
         .nest_service("/image", image_serve_dir)

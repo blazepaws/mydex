@@ -26,8 +26,6 @@ import urllib.request
 import subprocess
 import requests
 
-IMAGE_DIRECTORY = "data/images"
-POKEDEX_DIRECTORY = "data/pokedex"
 # How many entries are encoded in the horizontal direction in a spritesheet.
 SPRITESHEET_WIDTH = 64
 
@@ -62,7 +60,7 @@ def load_image_from_path(path: str) -> Image:
         return Image.open(BytesIO(response.content))
     except urllib.error.URLError:
         # If the image locator is not an URL, use a local file.
-        return Image.open(f"{IMAGE_DIRECTORY}/{path}")
+        return Image.open(f"images/{path}")
 
 def create_spritesheet(path: Path, resolution: tuple[int, int]) -> dict[str, int]:
     """
@@ -76,14 +74,16 @@ def create_spritesheet(path: Path, resolution: tuple[int, int]) -> dict[str, int
     # For pixelart we use nearest interpolation, for non-pixelart
     # we use bicubic interpolation.
     is_pixelart = pokedex.get("uses_pixelart_graphics", False)
-    images = set()
+    images = []
     for entry in pokedex["entries"]:
         if entry is None:
             continue
         if "sprite" in entry:
-            images.add(entry["sprite"])
+            if not entry["sprite"] in images:
+                images.append(entry["sprite"])
         else:
-            images.add("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/0.png")
+            if not "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/0.png" in images:
+                images.append("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/0.png")
 
     index = 0
     res = {}
@@ -97,7 +97,10 @@ def create_spritesheet(path: Path, resolution: tuple[int, int]) -> dict[str, int
         out_image.paste(image, ((index % SPRITESHEET_WIDTH) * resolution[0], int(index / SPRITESHEET_WIDTH) * resolution[1]))
         index += 1
 
-    out_image.save(f"public/images/{make_name_id(pokedex['name'])}-spritesheet.avif")
+    out_path = Path(f"web/images/{make_name_id(pokedex['name'])}-spritesheet.avif")
+    if not out_path.parent.exists():
+        out_path.parent.mkdir(parents=True)
+    out_image.save(out_path)
     return res
 
 def create_thumbnail(path: Path):
@@ -109,7 +112,7 @@ def create_thumbnail(path: Path):
     pokedex = json.loads(path.read_text())
     image = load_image_from_path(pokedex["thumbnail"])
     image = image.resize((128, 128))
-    image.save(f"public/images/{make_name_id(pokedex['name'])}-thumbnail.avif")
+    image.save(f"web/images/{make_name_id(pokedex['name'])}-thumbnail.avif")
 
 def create_update_record(path: Path, sprite_indices: dict[str, int]):
     """
@@ -153,7 +156,9 @@ def create_update_record(path: Path, sprite_indices: dict[str, int]):
         "commit_hash": commit_hash,
         "entries": entries,
     }
-    out_path = Path(f"data/compiled/{make_name_id(pokedex['name'])}.json")
+    out_path = Path(f"data/pokedexes/{make_name_id(pokedex['name'])}.json")
+    if not out_path.parent.exists():
+        out_path.parent.mkdir(parents=True)
     out_path.write_text(json.dumps(jsn))
 
 def sanity_check_pokedex_definitions():
@@ -161,13 +166,13 @@ def sanity_check_pokedex_definitions():
 
     # Global checks
     names = []
-    for path in Path(POKEDEX_DIRECTORY).glob("*.json"):
+    for path in Path("pokedexes").glob("*.json"):
         pokedex = json.loads(path.read_text())
         names.append(pokedex["name"])
     assert len(set(names)) == len(names), "Non-unique pokedex name"
 
     # Individual checks
-    for path in Path(POKEDEX_DIRECTORY).glob("*.json"):
+    for path in Path("pokedexes").glob("*.json"):
         pokedex = json.loads(path.read_text())
         assert len(pokedex["entries"]) > 0, "Empty pokedex"
         ids = list(x["id"] for x in pokedex["entries"] if x is not None)
@@ -178,7 +183,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         paths = [Path(p) for p in sys.argv[1:]]
     else:
-        paths = Path(POKEDEX_DIRECTORY).glob("*.json")
+        paths = Path("pokedexes").glob("*.json")
     Path("data/compiled").mkdir(exist_ok=True)
     sanity_check_pokedex_definitions()
     for pokedex in paths:

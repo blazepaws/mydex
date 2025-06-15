@@ -1,10 +1,15 @@
-/target
-.env
+# Don't include tooling files
 .idea/
 .sqlx/
 .venv/
 .cache/
+node_modules/
+
 # Don't include automatically generated files
-public/images/*_thumbnail.avif
-public/images/*_spritesheet.avif
-data/compiles/
+web/images/*_thumbnail.avif
+web/images/*_spritesheet.avif
+web/resources/main.css
+data/
+/target
+# Don't leak secrets
+.env
