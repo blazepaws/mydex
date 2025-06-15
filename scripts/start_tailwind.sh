@@ -1,2 +1,2 @@
 #!/bin/bash
-npx @tailwindcss/cli -i ./web/tailwind.css -o ./web/resources/main.css --watch
+npx @tailwindcss/cli -i ./tailwind.css -o ./web/resources/main.css --watch
