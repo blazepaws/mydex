@@ -2,7 +2,6 @@ use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
 use async_trait::async_trait;
 use axum_login::{AuthUser, AuthnBackend, AuthzBackend, UserId};
-use chrono::{DateTime, Utc};
 use password_auth::verify_password;
 use password_hash::PasswordHash;
 use serde::{Deserialize, Serialize};
