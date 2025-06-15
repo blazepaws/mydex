@@ -2,16 +2,17 @@ mod pokedex;
 mod settings;
 
 use askama::Template;
-use axum::response::{IntoResponse, Html, Redirect};
+use axum::response::{Html, IntoResponse, Redirect};
 use axum::Router;
 use axum::routing::get;
 use axum::extract::{Path, State};
-use sqlx::{query_as, query_scalar};
+use sqlx::{query_as, query_scalar, FromRow};
 
 use crate::error::AppError;
 use crate::web::AppState;
 use crate::auth::AuthSession;
 
+/// Information about a Pokédex a user has added to their profile.
 #[derive(sqlx::FromRow, Debug)]
 struct PokedexProgress {
     id: String,
@@ -22,11 +23,22 @@ struct PokedexProgress {
     thumbnail_url: String,
 }
 
+/// The description of a Pokédex the user has not yet added to their profile.
+#[derive(FromRow, Debug)]
+struct PokedexDescription {
+    id: String,
+    name: String,
+    description: String,
+    num_entries: i32,
+    thumbnail_url: String,
+}
+
 #[derive(Template)]
 #[template(path = "profile.html")]
 struct ProfileTemplate {
     username: String,
-    pokedexes: Vec<PokedexProgress>,
+    own_pokedexes: Vec<PokedexProgress>,
+    other_pokedexes: Vec<PokedexDescription>,
     is_own_profile: bool,
 }
 
@@ -44,7 +56,7 @@ mod get {
     /// Redirect the user to their own profile if logged in, otherwise redirect to login.
     pub async fn redirect_to_profile(auth_session: AuthSession) -> Result<impl IntoResponse, AppError> {
         match auth_session.user {
-            None => Ok(Redirect::to("/login?next=/profile")),
+            None => Ok(Redirect::to("/login")),
             Some(u) => Ok(Redirect::to(format!("/user/{}", u.name).as_str())),
         }
     }
@@ -67,24 +79,56 @@ mod get {
         };
         
         // Query Pokédex progress of the user to show on their profile.
-        let pokedexes = query_as!(
+        let own_pokedexes = query_as!(
             PokedexProgress,
-            "select 
-                pokedex.id, 
-                pokedex.name, 
-                pokedex.description, 
-                pokedex.thumbnail_url, 
+            "
+            select
+                pokedex.id,
+                pokedex.name,
+                pokedex.description,
+                pokedex.thumbnail_url,
                 num_entries,
-                count(*) as collected
-             from user_pokedex, pokedex 
-             where user_id = ? and user_pokedex.pokedex_id = pokedex.name
-             group by name",
+                coalesce(counts.collected, 0) as collected
+            from
+                user_pokedex
+                left join
+                (
+                    select user_pokedex_progress.pokedex_id, count(*) as collected
+                    from user_pokedex_progress
+                    where user_pokedex_progress.user_id = ?
+                    group by user_pokedex_progress.pokedex_id
+                ) counts
+                on counts.pokedex_id = user_pokedex.pokedex_id,
+                pokedex
+            where user_id = ? and user_pokedex.pokedex_id = pokedex.id
+            ",
             user_id,
+            user_id
         ).fetch_all(&state.database).await?;
+        
+        let other_pokedexes = if is_own_profile {
+            // Query list of pokedexes the user does not have
+            sqlx::query_as!(
+                PokedexDescription, 
+                "
+                select pokedex.id, pokedex.name, pokedex.description, pokedex.num_entries, pokedex.thumbnail_url
+                from pokedex
+                where pokedex.id not in (
+                    select user_pokedex.pokedex_id
+                    from user, user_pokedex
+                    where user.name like ? and user.user_id = user_pokedex.user_id
+                )
+                ",
+                username
+            ).fetch_all(&state.database).await?
+        } else {
+            vec![]
+        };
         
         Ok(Html(ProfileTemplate {
             username,
-            pokedexes,
+            own_pokedexes,
+            other_pokedexes,
             is_own_profile,
         }.render()?))
     }

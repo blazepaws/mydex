@@ -1,5 +1,5 @@
+use std::backtrace::Backtrace;
 use askama::Template;
-use axum::extract::Request;
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse, Response};
 use thiserror::Error;
@@ -17,20 +17,20 @@ static FALLBACK_ERROR_PAGE: &'static str = "<html><head><title>Error</title></he
 pub enum AppError {
     #[error("Failed to render HTML template: {0}.")]
     TemplateRender(#[from] askama::Error),
-    #[error("SQL error: {0}.")]
-    Sqlx(#[from] sqlx::Error),
+    #[error("Failed to execute query. {source}")]
+    Sqlx {
+        #[from]
+        source: sqlx::Error,
+        backtrace: Backtrace,
+    },
     #[error(transparent)]
     JoinError(#[from] JoinError),
-    #[error("Database migration error: {0}.")]   
-    DatabaseMigration(#[from] sqlx::migrate::MigrateError),
     #[error("Not found.")]  
     NotFound,
     #[error("Unauthorized.")]
     Unauthorized,
     #[error("Already exists.")]
     AlreadyExists,
-    #[error("Startup error: {0}.")] 
-    Startup(anyhow::Error),
 }
 
 impl AppError {
@@ -39,11 +39,9 @@ impl AppError {
     pub fn status_code(&self) -> StatusCode {
         match self {
             AppError::TemplateRender(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            AppError::Sqlx(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::Sqlx { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::JoinError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            AppError::DatabaseMigration(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::NotFound => StatusCode::NOT_FOUND,  
-            AppError::Startup(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::Unauthorized => StatusCode::UNAUTHORIZED,
             AppError::AlreadyExists => StatusCode::BAD_REQUEST,
         }
@@ -55,18 +53,12 @@ impl AppError {
     pub fn user_facing_error(&self) -> &'static str {
         match self {
             AppError::TemplateRender(_) => "Internal Server Error",
-            AppError::Sqlx(_) => "Internal Server Error",
+            AppError::Sqlx { .. } => "Internal Server Error",
             AppError::JoinError(_) => "Internal Server Error",
-            AppError::DatabaseMigration(_) => "Internal Server Error", 
             AppError::NotFound => "Not Found",
-            AppError::Startup(_) => "Server could not start",
             AppError::Unauthorized => "Unauthorized",
             AppError::AlreadyExists => "The resource already exists",
         }
-    }
-    
-    pub fn startup(err: impl Into<anyhow::Error>) -> Self {
-        AppError::Startup(err.into())   
     }
 }
 

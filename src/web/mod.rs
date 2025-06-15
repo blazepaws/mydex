@@ -1,12 +1,13 @@
+use anyhow::Context;
 use axum::response::IntoResponse;
 use axum::Router;
 use axum_login::AuthManagerLayerBuilder;
 use axum_messages::MessagesManagerLayer;
-use sqlx::{migrate, MySqlPool};
+use base64::Engine;
+use sqlx::MySqlPool;
 use tokio::net::TcpListener;
 use tokio::signal;
-use tokio::task::AbortHandle;
-use tower::service_fn;
+use tokio::task::{AbortHandle, JoinHandle};
 use tower_sessions::cookie::Key;
 use tower_sessions::{ExpiredDeletion, Expiry, SessionManagerLayer};
 use tower_sessions_sqlx_store::MySqlStore;
@@ -17,11 +18,10 @@ use crate::error::AppError;
 use crate::pokedex::update_pokedex_database;
 
 mod login;
-mod create;
-mod dex;
 mod user;
 mod index;
 mod r#static;
+mod pokedex;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -29,34 +29,28 @@ pub struct AppState {
 }
 
 pub struct App {
-    state: AppState,
+    router: Router,
     config: Config,
+    session_deletion_task: JoinHandle<tower_sessions::session_store::Result<()>>,
 }
 
 impl App {
-    pub async fn new(config: Config) -> Result<Self, AppError> {
+    pub async fn new(config: Config) -> anyhow::Result<Self> {
 
+        // Database setup
         info!("Creating database connection.");
         let pool = MySqlPool::connect(config.database_url.as_str()).await?;
         info!("Running database migrations.");
-        migrate!().run(&pool).await?;
+        sqlx::migrate!().run(&pool).await?;
+
+        // Update definitions
         info!("Updating pokedexes.");
         update_pokedex_database(pool.clone()).await?;
-
-        Ok(Self {
-            state: AppState {
-                database: pool,
-            },
-            config,
-        })
-    }
-
-    pub async fn serve(self) -> Result<(), anyhow::Error> {
 
         // Session layer
         // This uses `tower-sessions` to establish a layer that will provide the session
         // as a request extension.
-        let session_store = MySqlStore::new(self.state.database.clone());
+        let session_store = MySqlStore::new(pool.clone());
         debug!("Running session backend migrations.");
         session_store.migrate().await?;
         let session_deletion_task = tokio::task::spawn(
@@ -65,8 +59,15 @@ impl App {
                 .continuously_delete_expired(tokio::time::Duration::from_secs(60)),
         );
         // Generate a cryptographic key to sign the session cookie.
-        // TODO: Source this from somewhere so we can have multiple instances of this service.
-        let key = Key::generate();
+        let key = if let Some(key) = &config.cookie_key {
+            info!("Using provided cookie key.");
+            let decoded = base64::engine::general_purpose::STANDARD.decode(key)
+                .context("Failed to decode cookie key")?;
+            Key::try_from(decoded.as_slice()).context("Failed to decode cookie key")?
+        } else {
+            info!("Generating random cookie key.");
+            Key::generate()
+        };
         let session_layer = SessionManagerLayer::new(session_store)
             // It would be safe to send the cookie over unencrypted communication
             .with_secure(false)
@@ -77,13 +78,14 @@ impl App {
         // Auth layer
         // This combines the session layer with our auth backend to establish the auth
         // service which will provide the auth session as a request extension.
-        let backend = AuthBackend::new(self.state.database.clone());
+        let backend = AuthBackend::new(pool.clone());
         let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
-        // Create the app
-        let app = Router::new()
+        // Create the app's router
+        let app_state = AppState { database: pool };
+        let router = Router::new()
             .merge(user::router())
-            .with_state(self.state.clone())
+            .with_state(app_state)
             .merge(index::router())
             .merge(login::router())
             .merge(r#static::router())
@@ -91,19 +93,29 @@ impl App {
             .layer(MessagesManagerLayer)
             .layer(auth_layer);
 
+        Ok(Self {
+            router,
+            config,
+            session_deletion_task
+        })
+    }
+
+    pub async fn serve(self) -> Result<(), anyhow::Error> {
+
+
         let listener = TcpListener::bind(self.config.bind_addr.as_str()).await?;
         
         info!("Starting server on {}.", self.config.bind_addr);
 
         // Ensure we use a shutdown signal to abort the deletion task.
-        axum::serve(listener, app.into_make_service())
-            .with_graceful_shutdown(shutdown_signal(session_deletion_task.abort_handle()))
+        axum::serve(listener, self.router.into_make_service())
+            .with_graceful_shutdown(shutdown_signal(self.session_deletion_task.abort_handle()))
             .await?;
 
         // A join error here just means it was shut down with a signal.
         // That's not an error, but is expected. 
         // We only care about the inner error.
-        session_deletion_task.await.ok().transpose()?;
+        self.session_deletion_task.await.ok().transpose()?;
 
         Ok(())
     }

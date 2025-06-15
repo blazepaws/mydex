@@ -1,3 +1,5 @@
+#![feature(error_generic_member_access)]
+
 use std::process::exit;
 use envconfig::Envconfig;
 use tracing::error;
@@ -15,6 +17,8 @@ pub struct Config {
     pub database_url: String,
     #[envconfig(from = "BIND_ADDR", default = "127.0.0.1:8000")]
     pub bind_addr: String,
+    #[envconfig(from = "COOKIE_KEY")]
+    pub cookie_key: Option<String>,
 }
 
 async fn run() -> Result<(), anyhow::Error> {
@@ -36,7 +40,7 @@ async fn main() {
 
     // Run the actual server and log any fatal errors before exiting
     if let Err(err) = run().await {
-        error!("Fatal error: {err}");
+        error!("Fatal error: {:?}", err);
         exit(1);
     }
 }
