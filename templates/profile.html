@@ -3,24 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ username }}</title>
+    <link rel="stylesheet" href="/resource/main.css">
 </head>
 <body>
-    <h1>{{username}}'s Profile</h1>
-    <h2>Pokédexes</h2>
-    {% if is_own_profile %}
-    <button onclick="window.location.href='/add-dex';">Add Pokédex</button>
-    {% endif %}
-    <div>
-        {% for pokedex in pokedexes %}
-        <a href="/dex/{{username}}/{{pokedex.id}}">
-            <img src="{{ pokedex.thumbnail_url }}" alt="thumb">
-            <div>
-                <h3>{{pokedex.name}}</h3>
-                <p>{{ pokedex.description }}</p>
-                <progress value="{{ pokedex.collected }}" max="{{ pokedex.num_entries }}">{{ pokedex.collected }}/{{ pokedex.num_entries }}</progress>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
+    <main class="flex flex-col items-start m-5 gap-5">
+        <h1>{{username}}'s Profile</h1>
+
+        <h2>Pokédexes</h2>
+        <div id="own-pokedexes" class="flex flex-col gap-5">
+            {% for pokedex in own_pokedexes %}
+            <a
+                    href="/user/{{username}}/pokedex/{{pokedex.id}}"
+                    class="flex flex-row max-w-120 gap-2"
+            >
+                <img src="{{ pokedex.thumbnail_url }}" alt="thumb" class="w-16 h-16">
+                <div class="flex flex-col items-start w-full">
+                    <h3 class="text-2x1 text-left font-medium">{{ pokedex.name }}</h3>
+                    <p class="text-sm text-left">{{ pokedex.description }}</p>
+                    <progress
+                            value="{{ pokedex.collected }}" max="{{ pokedex.num_entries }}"
+                            class="w-full"
+                    >
+                        {{ pokedex.collected }}/{{ pokedex.num_entries }}
+                    </progress>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% if is_own_profile %}
+        <h2>Add new Pokédex</h2>
+        <script>
+            function addPokedex(pokedex_id) {
+                let username = "{{username}}";
+                fetch(`/user/${username}/pokedex/${pokedex_id}`, { method: "PUT" })
+                    .then(response => { if (response.ok) { location.reload() } });
+            }
+        </script>
+        <div class="flex flex-wrap gap-2">
+            {% for pokedex in other_pokedexes %}
+            <button
+                    id="pokedex-{{pokedex.id}}" onclick="addPokedex('{{ pokedex.id }}')"
+                    class="flex flex-row w-100 gap-2"
+            >
+                <img src="{{ pokedex.thumbnail_url }}" class="w-16 h-16" alt="thumb">
+                <div class="flex flex-col items-start">
+                    <h3 class="text-2x1 text-left font-medium">{{ pokedex.name }}</h3>
+                    <p class="text-sm text-left">{{ pokedex.description }}</p>
+                </div>
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
 </body>
 </html>
