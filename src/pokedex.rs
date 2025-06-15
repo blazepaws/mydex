@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::{query, MySqlPool};
 use tokio::fs;
-use tracing::{debug, info};
+use tracing::{debug, info, warn};
 use crate::error::AppError;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -17,32 +17,30 @@ struct Pokedex {
 }
 
 /// Load the pokedex definitions and add them to our database.
-pub async fn update_pokedex_database(db: MySqlPool) -> Result<(), AppError> {
-
-    async fn inner(db: MySqlPool) -> anyhow::Result<()> {
-
-        // Load the pokedex definitions from the file system
-        let mut definition_paths = fs::read_dir("data/compiled").await?;
-        while let Some(path) = definition_paths.next_entry().await? {
-            let is_json_file = match path.file_type().await {
-                Ok(t) => t.is_file() && path.file_name().to_string_lossy().ends_with(".json"),
-                Err(_) => false,
-            };
-            if !is_json_file {
-                continue;
-            }
-            let path = path.path();
-
-            let content = fs::read_to_string(&path).await?;
-            let definition: Pokedex = serde_json::from_str(content.as_str())?;
-            update_pokedex(&db, definition).await?;
+pub async fn update_pokedex_database(db: MySqlPool) -> anyhow::Result<()> {
+    
+    // Load the pokedex definitions from the file system
+    if fs::try_exists("data/pokedexes").await.ok() != Some(true) {
+        warn!("No pokedex definitions found.");
+        return Ok(())
+    }
+    let mut definition_paths = fs::read_dir("data/pokedexes").await?;
+    while let Some(path) = definition_paths.next_entry().await? {
+        let is_json_file = match path.file_type().await {
+            Ok(t) => t.is_file() && path.file_name().to_string_lossy().ends_with(".json"),
+            Err(_) => false,
+        };
+        if !is_json_file {
+            continue;
         }
+        let path = path.path();
 
-        Ok(())
+        let content = fs::read_to_string(&path).await?;
+        let definition: Pokedex = serde_json::from_str(content.as_str())?;
+        update_pokedex(&db, definition).await?;
     }
 
-    // Easy error conversion
-    inner(db).await.map_err(AppError::startup)
+    Ok(())
 }
 
 /// Updates the pokedex description and entries in the database.
