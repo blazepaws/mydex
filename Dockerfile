@@ -5,7 +5,7 @@ COPY . /build
 WORKDIR /build
 
 # Compile data
-RUN apk add --no-cache python3 py3-pip py3-pillow
+RUN apk add --no-cache python3 py3-pip py3-pillow py3-pillow-avif-plugin
 RUN python scripts/compile_data.py
 
 # Build the server application
